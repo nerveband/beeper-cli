@@ -34,11 +34,7 @@ var messagesListCmd = &cobra.Command{
 			return fmt.Errorf("failed to list messages: %w", err)
 		}
 
-		formatted, err := output.FormatMessages(messages, getOutputFormat())
-		if err != nil {
-			return err
-		}
-
+		formatted := output.FormatMessages(messages, getOutputFormat())
 		fmt.Print(formatted)
 		return nil
 	},

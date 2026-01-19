@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -25,17 +26,28 @@ var sendCmd = &cobra.Command{
 
 		client := api.NewClient(cfg.APIURL)
 
-		resp, err := client.SendMessage(chatID, message)
+		messageID, err := client.SendMessage(chatID, message)
 		if err != nil {
 			return fmt.Errorf("failed to send message: %w", err)
 		}
 
-		formatted, err := output.FormatSendResponse(resp, getOutputFormat())
-		if err != nil {
-			return err
+		// Format output based on format preference
+		format := getOutputFormat()
+		switch format {
+		case output.FormatJSON:
+			result := map[string]interface{}{
+				"success":    true,
+				"message_id": messageID,
+				"chat_id":    chatID,
+			}
+			jsonData, _ := json.MarshalIndent(result, "", "  ")
+			fmt.Println(string(jsonData))
+		case output.FormatMarkdown:
+			fmt.Printf("**Message sent successfully**\n\nID: `%s`\n", messageID)
+		default: // text
+			fmt.Printf("Message sent successfully. ID: %s\n", messageID)
 		}
 
-		fmt.Print(formatted)
 		return nil
 	},
 }

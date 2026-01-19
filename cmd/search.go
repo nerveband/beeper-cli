@@ -29,11 +29,7 @@ var searchCmd = &cobra.Command{
 			return fmt.Errorf("failed to search messages: %w", err)
 		}
 
-		formatted, err := output.FormatMessages(messages, getOutputFormat())
-		if err != nil {
-			return err
-		}
-
+		formatted := output.FormatMessages(messages, getOutputFormat())
 		fmt.Print(formatted)
 		return nil
 	},

@@ -25,11 +25,7 @@ var chatsListCmd = &cobra.Command{
 			return fmt.Errorf("failed to list chats: %w", err)
 		}
 
-		formatted, err := output.FormatChats(chats, getOutputFormat())
-		if err != nil {
-			return err
-		}
-
+		formatted := output.FormatChats(chats, getOutputFormat())
 		fmt.Print(formatted)
 		return nil
 	},
@@ -50,11 +46,7 @@ var chatsGetCmd = &cobra.Command{
 
 		// Format as single-item array for consistent output
 		chats := []api.Chat{*chat}
-		formatted, err := output.FormatChats(chats, getOutputFormat())
-		if err != nil {
-			return err
-		}
-
+		formatted := output.FormatChats(chats, getOutputFormat())
 		fmt.Print(formatted)
 		return nil
 	},
