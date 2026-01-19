@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/nerveband/beeper-cli/internal/api"
 	"github.com/nerveband/beeper-cli/internal/output"
 )
 
@@ -27,7 +26,7 @@ var messagesListCmd = &cobra.Command{
 			return fmt.Errorf("--chat-id is required")
 		}
 
-		client := api.NewClient(cfg.APIURL)
+		client := getAPIClient()
 
 		messages, err := client.ListMessages(chatID, messagesLimit)
 		if err != nil {

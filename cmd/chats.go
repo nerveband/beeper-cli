@@ -18,7 +18,7 @@ var chatsListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all chats",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		client := api.NewClient(cfg.APIURL)
+		client := getAPIClient()
 
 		chats, err := client.ListChats()
 		if err != nil {
@@ -36,7 +36,7 @@ var chatsGetCmd = &cobra.Command{
 	Short: "Get details of a specific chat",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		client := api.NewClient(cfg.APIURL)
+		client := getAPIClient()
 		chatID := args[0]
 
 		chat, err := client.GetChat(chatID)

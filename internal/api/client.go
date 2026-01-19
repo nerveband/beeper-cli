@@ -90,55 +90,30 @@ func (c *Client) doRequest(method, path string, body interface{}) ([]byte, error
 }
 
 // Chat represents a Beeper chat/conversation
-type Chat struct {
-	ID           string    `json:"id"`
-	Name         string    `json:"name"`
-	Participants []string  `json:"participants"`
-	LastMessage  string    `json:"last_message"`
-	UnreadCount  int       `json:"unread_count"`
-	UpdatedAt    time.Time `json:"updated_at"`
-}
-
-// Message represents a Beeper message
-type Message struct {
-	ID        string `json:"id"`
-	ChatID    string `json:"chat_id"`
-	Sender    string `json:"sender"`
-	Text      string `json:"text"`
-	Timestamp int64  `json:"timestamp"` // Unix timestamp
-	Type      string `json:"type"`
-}
-
-// SendMessageRequest represents a message send request
-type SendMessageRequest struct {
-	ChatID  string `json:"chat_id"`
-	Message string `json:"message"`
-}
-
-// SendMessageResponse represents the API response after sending a message
-type SendMessageResponse struct {
-	MessageID string `json:"message_id"`
-	Success   bool   `json:"success"`
+// ChatsResponse represents the API response for listing chats
+type ChatsResponse struct {
+	Items  []Chat `json:"items"`
+	HasMore bool `json:"hasMore"`
 }
 
 // ListChats retrieves all chats
 func (c *Client) ListChats() ([]Chat, error) {
-	data, err := c.doRequest("GET", "/chats", nil)
+	data, err := c.doRequest("GET", "/v1/chats", nil)
 	if err != nil {
 		return nil, err
 	}
 
-	var chats []Chat
-	if err := json.Unmarshal(data, &chats); err != nil {
+	var resp ChatsResponse
+	if err := json.Unmarshal(data, &resp); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal chats: %w", err)
 	}
 
-	return chats, nil
+	return resp.Items, nil
 }
 
 // GetChat retrieves a specific chat by ID
 func (c *Client) GetChat(chatID string) (*Chat, error) {
-	data, err := c.doRequest("GET", "/chats/"+chatID, nil)
+	data, err := c.doRequest("GET", "/v1/chats/"+chatID, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -151,30 +126,35 @@ func (c *Client) GetChat(chatID string) (*Chat, error) {
 	return &chat, nil
 }
 
+// MessagesResponse represents the API response for listing messages
+type MessagesResponse struct {
+	Items []Message `json:"items"`
+	HasMore bool `json:"hasMore"`
+}
+
 // ListMessages retrieves messages from a chat
 func (c *Client) ListMessages(chatID string, limit int) ([]Message, error) {
-	path := fmt.Sprintf("/chats/%s/messages?limit=%d", chatID, limit)
+	path := fmt.Sprintf("/v1/chats/%s/messages?limit=%d", chatID, limit)
 	data, err := c.doRequest("GET", path, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	var messages []Message
-	if err := json.Unmarshal(data, &messages); err != nil {
+	var resp MessagesResponse
+	if err := json.Unmarshal(data, &resp); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal messages: %w", err)
 	}
 
-	return messages, nil
+	return resp.Items, nil
 }
 
 // SendMessage sends a message to a chat and returns the message ID
 func (c *Client) SendMessage(chatID, message string) (string, error) {
 	req := SendMessageRequest{
-		ChatID:  chatID,
-		Message: message,
+		Text: message,
 	}
 
-	data, err := c.doRequest("POST", "/messages/send", req)
+	data, err := c.doRequest("POST", "/v1/chats/"+chatID+"/messages", req)
 	if err != nil {
 		return "", err
 	}
@@ -184,12 +164,12 @@ func (c *Client) SendMessage(chatID, message string) (string, error) {
 		return "", fmt.Errorf("failed to unmarshal response: %w", err)
 	}
 
-	return resp.MessageID, nil
+	return resp.ID, nil
 }
 
 // SearchMessages searches for messages across all chats
 func (c *Client) SearchMessages(query string, limit int) ([]Message, error) {
-	path := fmt.Sprintf("/search?query=%s&limit=%d", query, limit)
+	path := fmt.Sprintf("/v1/messages/search?q=%s&limit=%d", query, limit)
 	data, err := c.doRequest("GET", path, nil)
 	if err != nil {
 		return nil, err

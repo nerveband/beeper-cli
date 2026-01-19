@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/nerveband/beeper-cli/internal/api"
 	"github.com/nerveband/beeper-cli/internal/output"
 )
 
@@ -22,7 +21,7 @@ var searchCmd = &cobra.Command{
 			return fmt.Errorf("--query is required")
 		}
 
-		client := api.NewClient(cfg.APIURL)
+		client := getAPIClient()
 
 		messages, err := client.SearchMessages(query, searchLimit)
 		if err != nil {
