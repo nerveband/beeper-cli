@@ -1,0 +1,28 @@
+# Binaries
+beeper
+beeper-*
+*.exe
+dist/
+
+# Go
+*.o
+*.a
+*.so
+
+# Test files
+*.test
+*.out
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Config (personal)
+.beeper-cli/
