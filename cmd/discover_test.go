@@ -15,7 +15,7 @@ func TestDiscoverCommand(t *testing.T) {
 
 	rootCmd.SetArgs([]string{"discover"})
 
-	err := rootCmd.Execute()
+	_ = rootCmd.Execute()
 	
 	// Discovery may fail if Beeper Desktop is not running
 	// We just check that the command executes without panicking

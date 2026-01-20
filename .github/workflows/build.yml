@@ -23,6 +23,9 @@ jobs:
     
     - name: Test
       run: go test -v ./...
+      env:
+        BEEPER_API_URL: ""
+        BEEPER_TOKEN: ""
     
     - name: Verify cross-compilation
       run: |

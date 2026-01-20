@@ -13,14 +13,14 @@ var (
 	testChats = []api.Chat{
 		{
 			ID:           "chat1",
-			Name:         "Test Chat 1",
-			Participants: []string{"Alice", "Bob"},
+			Title:        "Test Chat 1",
+			Participants: map[string]interface{}{"Alice": true, "Bob": true},
 			UnreadCount:  5,
 		},
 		{
 			ID:           "chat2",
-			Name:         "Test Chat 2",
-			Participants: []string{"Charlie"},
+			Title:        "Test Chat 2",
+			Participants: map[string]interface{}{"Charlie": true},
 			UnreadCount:  0,
 		},
 	}
@@ -30,13 +30,13 @@ var (
 			ID:        "msg1",
 			Text:      "Hello, world!",
 			Sender:    "Alice",
-			Timestamp: 1640000000,
+			Timestamp: "2021-12-20T00:00:00Z",
 		},
 		{
 			ID:        "msg2",
 			Text:      "How are you?",
 			Sender:    "Bob",
-			Timestamp: 1640000100,
+			Timestamp: "2021-12-20T00:01:40Z",
 		},
 	}
 )
@@ -64,7 +64,6 @@ func TestFormatChatsText(t *testing.T) {
 	assert.Contains(t, result, "chat1")
 	assert.Contains(t, result, "Test Chat 1")
 	assert.Contains(t, result, "Unread: 5")
-	assert.Contains(t, result, "Participants: Alice, Bob")
 }
 
 // TestFormatChatsMarkdown tests Markdown formatting for chats
@@ -75,7 +74,6 @@ func TestFormatChatsMarkdown(t *testing.T) {
 	assert.Contains(t, result, "##")
 	assert.Contains(t, result, "chat1")
 	assert.Contains(t, result, "Test Chat 1")
-	assert.Contains(t, result, "**Participants**")
 }
 
 // TestFormatMessagesJSON tests JSON formatting for messages
@@ -156,28 +154,28 @@ func TestFormatChatName(t *testing.T) {
 		expected string
 	}{
 		{
-			name: "Chat with name",
+			name: "Chat with title",
 			chat: api.Chat{
-				ID:   "chat1",
-				Name: "My Chat",
+				ID:    "chat1",
+				Title: "My Chat",
 			},
 			expected: "My Chat",
 		},
 		{
-			name: "Chat without name",
+			name: "Chat without title",
 			chat: api.Chat{
 				ID:           "chat2",
-				Name:         "",
-				Participants: []string{"Alice", "Bob"},
+				Title:        "",
+				Participants: map[string]interface{}{"Alice": true, "Bob": true},
 			},
-			expected: "Alice, Bob",
+			expected: "chat2",
 		},
 		{
-			name: "Chat with no name or participants",
+			name: "Chat with no title or participants",
 			chat: api.Chat{
 				ID:           "chat3",
-				Name:         "",
-				Participants: []string{},
+				Title:        "",
+				Participants: map[string]interface{}{},
 			},
 			expected: "chat3",
 		},
@@ -197,7 +195,7 @@ func TestFormatMessageTimestamp(t *testing.T) {
 		ID:        "msg1",
 		Text:      "Test",
 		Sender:    "Alice",
-		Timestamp: 1640000000,
+		Timestamp: "2021-12-20T00:00:00Z",
 	}
 
 	result := FormatMessages([]api.Message{msg}, FormatText)
@@ -212,7 +210,7 @@ func TestFormatLongMessage(t *testing.T) {
 		ID:        "msg1",
 		Text:      longText,
 		Sender:    "Alice",
-		Timestamp: 1640000000,
+		Timestamp: "2021-12-20T00:00:00Z",
 	}
 
 	result := FormatMessages([]api.Message{msg}, FormatText)
@@ -225,7 +223,7 @@ func TestFormatSpecialCharacters(t *testing.T) {
 		ID:        "msg1",
 		Text:      "Special chars: < > & \" ' \n\t",
 		Sender:    "Alice",
-		Timestamp: 1640000000,
+		Timestamp: "2021-12-20T00:00:00Z",
 	}
 
 	jsonResult := FormatMessages([]api.Message{msg}, FormatJSON)

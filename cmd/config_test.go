@@ -85,7 +85,7 @@ func TestConfigValidateCommand(t *testing.T) {
 
 	rootCmd.SetArgs([]string{"config", "validate"})
 
-	err := rootCmd.Execute()
+	_ = rootCmd.Execute()
 	
 	// Should either succeed or fail gracefully
 	result := output.String()
